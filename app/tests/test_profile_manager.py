@@ -47,7 +47,7 @@ class TestProfileManager(unittest.TestCase):
         pm = ProfileManager()
         p = pm.get("AF BFC Scan")
         self.assertEqual(p.filter.tag, "AF_DEBUG")
-        self.assertEqual(p.filter.keyword, "BFC scanning")
+        self.assertEqual(p.filter.keyword, "BFC scaning")
 
     def test_af_bfc_has_two_patterns(self):
         pm = ProfileManager()

@@ -16,7 +16,7 @@ name: AF BFC Scan
 # ----------------------------------------------------------
 filter:
   tag: AF_DEBUG
-  keyword: "BFC scanning"
+  keyword: "BFC scaning"
 
 # ----------------------------------------------------------
 # patterns: 메시지 파싱 규칙 목록 (순서대로 적용)

@@ -4,8 +4,8 @@ from app.model import ExtractionResult, ExtractedEntry
 
 # SampleLog의 AF_DEBUG BFC 라인 두 개 (음수 포함)
 SAMPLE_LINES = """\
-04-17 10:02:10.822  2107  4298  E  AF_DEBUG:    CheckDebugMode(4499) : [cam_id_0] BFC scanning 1 | Dof 64 | FirstPos 1726 | step 64 | point 10 | CurrLens 1726,  178 mm | pdResult   0.0938 | aiResult  -1.3683, 1 | pdAvg   0.0891 | aiAvg  -1.5747
-04-17 10:02:12.725  2107  4302  E  AF_DEBUG:    CheckDebugMode(4499) : [cam_id_0] BFC scanning 1 | Dof 64 | FirstPos 1726 | step 64 | point 10 | CurrLens 1086, 4930 mm | pdResult -10.0312 | aiResult -12.3674, 1 | pdAvg -10.0547 | aiAvg -12.3096
+04-17 10:02:10.822  2107  4298  E  AF_DEBUG:    CheckDebugMode(4499) : [cam_id_0] BFC scaning 1 | Dof 64 | FirstPos 1726 | step 64 | point 10 | CurrLens 1726,  178 mm | pdResult   0.0938 | aiResult  -1.3683, 1 | pdAvg   0.0891 | aiAvg  -1.5747
+04-17 10:02:12.725  2107  4302  E  AF_DEBUG:    CheckDebugMode(4499) : [cam_id_0] BFC scaning 1 | Dof 64 | FirstPos 1726 | step 64 | point 10 | CurrLens 1086, 4930 mm | pdResult -10.0312 | aiResult -12.3674, 1 | pdAvg -10.0547 | aiAvg -12.3096
 """
 
 # 필터에 걸리지 않아야 할 라인들
@@ -36,7 +36,7 @@ class TestRuleEngine(unittest.TestCase):
         self.assertEqual(len(result.entries), 2)
 
     def test_wrong_tag_excluded(self):
-        line = "04-17 10:02:10.822  2107  4298  E  AIAF:    BFC scanning 1 | Dof 64 | CurrLens 1726, 178 mm | pdResult 0.09\n"
+        line = "04-17 10:02:10.822  2107  4298  E  AIAF:    BFC scaning 1 | Dof 64 | CurrLens 1726, 178 mm | pdResult 0.09\n"
         result = self._run(line)
         self.assertEqual(len(result.entries), 0)
 
@@ -106,7 +106,7 @@ class TestRuleEngine(unittest.TestCase):
         with open("Sample/SampleLog.txt", encoding="utf-8") as f:
             raw = f.read()
         result = self._run(raw)
-        # SampleLog에는 BFC scanning 라인이 22개 (line 16~37)
+        # SampleLog에는 BFC scaning 라인이 22개 (line 16~37)
         self.assertEqual(len(result.entries), 22)
 
     def test_full_sample_log_no_failed_lines(self):
