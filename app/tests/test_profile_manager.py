@@ -49,17 +49,27 @@ class TestProfileManager(unittest.TestCase):
         self.assertEqual(p.filter.tag, "AF_DEBUG")
         self.assertEqual(p.filter.keyword, "BFC scanning")
 
-    def test_af_bfc_has_one_pattern(self):
+    def test_af_bfc_has_two_patterns(self):
         pm = ProfileManager()
         p = pm.get("AF BFC Scan")
-        self.assertEqual(len(p.patterns), 1)
+        self.assertEqual(len(p.patterns), 2)
         self.assertEqual(p.patterns[0].type, "segment")
+        self.assertEqual(p.patterns[1].type, "regex")
 
-    def test_af_bfc_visualization_has_three_plots(self):
+    def test_af_bfc_regex_pattern_extracts_currlens(self):
         pm = ProfileManager()
         p = pm.get("AF BFC Scan")
-        self.assertEqual(len(p.visualization.plots), 3)
-        self.assertEqual(p.visualization.plots[0].title, "Lens Position")
+        pattern = p.patterns[1].params["pattern"]
+        self.assertIn("CurrLens_code", pattern)
+        self.assertIn("CurrLens_mm", pattern)
+
+    def test_af_bfc_visualization_has_four_plots(self):
+        pm = ProfileManager()
+        p = pm.get("AF BFC Scan")
+        self.assertEqual(len(p.visualization.plots), 4)
+        titles = [pl.title for pl in p.visualization.plots]
+        self.assertIn("Lens Position (code)", titles)
+        self.assertIn("Lens Position (mm)", titles)
 
     # -------------------------------------------- custom dir / load_file
     def test_load_from_custom_directory(self):

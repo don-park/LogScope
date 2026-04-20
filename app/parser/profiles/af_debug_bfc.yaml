@@ -27,6 +27,11 @@ filter:
 #   inner_type - 세그먼트 내부 파싱 방식 (key_value / regex)
 #   separator  - key와 value 사이 구분자
 #   keys       - 추출할 키 목록 (목록에 없는 키는 무시)
+#
+# type: regex
+#   pattern - Python 정규식 (named group (?P<key>...) 으로 키 이름 지정)
+#   예시: "CurrLens\\s+(?P<CurrLens_code>\\d+),\\s*(?P<CurrLens_mm>\\d+)\\s*mm"
+#         → CurrLens_code = 1726, CurrLens_mm = 178
 # ----------------------------------------------------------
 patterns:
   - type: segment
@@ -40,11 +45,15 @@ patterns:
         - FirstPos
         - step
         - point
-        - CurrLens
         - pdResult
         - aiResult
         - pdAvg
         - aiAvg
+
+  # CurrLens는 두 값(code, mm)을 분리 추출
+  - type: regex
+    params:
+      pattern: "CurrLens\\s+(?P<CurrLens_code>\\d+),\\s*(?P<CurrLens_mm>\\d+)\\s*mm"
 
 # ----------------------------------------------------------
 # visualization: 그래프 레이아웃 및 플롯 정의
@@ -57,14 +66,18 @@ patterns:
 visualization:
   layout: grid
   plots:
-    - title: Lens Position
-      keys: [CurrLens]
-      y_label: DoF
+    - title: Lens Position (code)
+      keys: [CurrLens_code]
+      y_label: code
 
-    - title: PD_AVG
+    - title: Lens Position (mm)
+      keys: [CurrLens_mm]
+      y_label: mm
+
+    - title: PD Result
       keys: [pdResult, pdAvg]
       y_label: DoF
 
-    - title: AI_AVG
+    - title: AI Result
       keys: [aiResult, aiAvg]
       y_label: DoF
