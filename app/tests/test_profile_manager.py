@@ -1,7 +1,7 @@
-import json
 import os
 import tempfile
 import unittest
+import yaml
 from app.parser import ProfileManager
 from app.model import AnalysisProfile, FilterConfig, PatternConfig, PlotConfig, VisualizationConfig
 
@@ -28,9 +28,9 @@ class TestProfileManager(unittest.TestCase):
     def _make_dir(self, profiles: list[dict]) -> str:
         d = tempfile.mkdtemp()
         for p in profiles:
-            path = os.path.join(d, p["name"].replace(" ", "_") + ".json")
+            path = os.path.join(d, p["name"].replace(" ", "_") + ".yaml")
             with open(path, "w", encoding="utf-8") as f:
-                json.dump(p, f)
+                yaml.dump(p, f, allow_unicode=True)
         return d
 
     # ---------------------------------------------------------------- loading
@@ -47,7 +47,7 @@ class TestProfileManager(unittest.TestCase):
         pm = ProfileManager()
         p = pm.get("AF BFC Scan")
         self.assertEqual(p.filter.tag, "AF_DEBUG")
-        self.assertEqual(p.filter.keyword, "CheckDebugMode")
+        self.assertEqual(p.filter.keyword, "BFC scanning")
 
     def test_af_bfc_has_one_pattern(self):
         pm = ProfileManager()
@@ -89,13 +89,21 @@ class TestProfileManager(unittest.TestCase):
 
     def test_load_file_adds_profile(self):
         pm = ProfileManager(profiles_dir=tempfile.mkdtemp())
-        f = tempfile.NamedTemporaryFile(suffix=".json", mode="w", delete=False, encoding="utf-8")
-        json.dump(SAMPLE_PROFILE, f)
+        f = tempfile.NamedTemporaryFile(suffix=".yaml", mode="w", delete=False, encoding="utf-8")
+        yaml.dump(SAMPLE_PROFILE, f, allow_unicode=True)
         f.close()
         loaded = pm.load_file(f.name)
         self.assertEqual(loaded.name, "Test Profile")
         self.assertIn("Test Profile", pm.list_profiles())
         os.unlink(f.name)
+
+    def test_yml_extension_also_loaded(self):
+        d = tempfile.mkdtemp()
+        path = os.path.join(d, "test.yml")
+        with open(path, "w", encoding="utf-8") as f:
+            yaml.dump(SAMPLE_PROFILE, f, allow_unicode=True)
+        pm = ProfileManager(profiles_dir=d)
+        self.assertIn("Test Profile", pm.list_profiles())
 
     # ---------------------------------------------------------- edge cases
     def test_empty_profiles_dir_returns_empty_list(self):
@@ -110,11 +118,11 @@ class TestProfileManager(unittest.TestCase):
         pm = ProfileManager()
         self.assertIsNone(pm.get("does not exist"))
 
-    def test_malformed_json_file_is_skipped(self):
+    def test_malformed_yaml_file_is_skipped(self):
         d = tempfile.mkdtemp()
-        bad = os.path.join(d, "bad.json")
+        bad = os.path.join(d, "bad.yaml")
         with open(bad, "w") as f:
-            f.write("{ not valid json }")
+            f.write("name: [unclosed bracket")
         pm = ProfileManager(profiles_dir=d)
         self.assertEqual(pm.list_profiles(), [])
 

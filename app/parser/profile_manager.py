@@ -1,6 +1,6 @@
 from __future__ import annotations
-import json
 import os
+import yaml
 from app.model.profile import (
     AnalysisProfile, FilterConfig, PatternConfig, PlotConfig, VisualizationConfig,
 )
@@ -18,17 +18,17 @@ class ProfileManager:
         if not os.path.isdir(self._dir):
             return
         for fname in os.listdir(self._dir):
-            if fname.endswith(".json"):
+            if fname.endswith(".yaml") or fname.endswith(".yml"):
                 path = os.path.join(self._dir, fname)
                 try:
                     profile = self._load_file(path)
                     self._profiles[profile.name] = profile
-                except (KeyError, ValueError, json.JSONDecodeError):
+                except (KeyError, ValueError, yaml.YAMLError):
                     pass  # skip malformed profiles silently
 
     def _load_file(self, path: str) -> AnalysisProfile:
         with open(path, encoding="utf-8") as f:
-            data = json.load(f)
+            data = yaml.safe_load(f)
         return self._from_dict(data)
 
     def _from_dict(self, data: dict) -> AnalysisProfile:

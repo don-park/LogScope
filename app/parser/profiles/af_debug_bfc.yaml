@@ -1,0 +1,70 @@
+# ============================================================
+# Analysis Profile: AF BFC Scan
+# ============================================================
+# 대상 로그: AF_DEBUG 태그의 BFC 스캔 데이터
+# 예시 메시지:
+#   CheckDebugMode(4499) : [cam_id_0] BFC scanning 1 | Dof 64 | CurrLens 1726, 178 mm |
+#   pdResult 0.0938 | aiResult -1.3683, 1 | pdAvg 0.0891 | aiAvg -1.5747
+# ============================================================
+
+name: AF BFC Scan
+
+# ----------------------------------------------------------
+# filter: 이 프로파일을 적용할 로그 라인 조건
+#   tag     - logcat 태그 (정확히 일치)
+#   keyword - 메시지에 포함되어야 할 키워드
+# ----------------------------------------------------------
+filter:
+  tag: AF_DEBUG
+  keyword: "BFC scanning"
+
+# ----------------------------------------------------------
+# patterns: 메시지 파싱 규칙 목록 (순서대로 적용)
+#
+# type: segment
+#   delimiter  - 세그먼트 구분자
+#   strip      - 세그먼트 양끝 공백 제거 여부
+#   inner_type - 세그먼트 내부 파싱 방식 (key_value / regex)
+#   separator  - key와 value 사이 구분자
+#   keys       - 추출할 키 목록 (목록에 없는 키는 무시)
+# ----------------------------------------------------------
+patterns:
+  - type: segment
+    params:
+      delimiter: "|"
+      strip: true
+      inner_type: key_value
+      separator: " "
+      keys:
+        - Dof
+        - FirstPos
+        - step
+        - point
+        - CurrLens
+        - pdResult
+        - aiResult
+        - pdAvg
+        - aiAvg
+
+# ----------------------------------------------------------
+# visualization: 그래프 레이아웃 및 플롯 정의
+#   layout - "grid" (여러 그래프) | "single" (하나의 그래프)
+#   plots  - 플롯 목록
+#     title   - 그래프 제목
+#     keys    - y축에 표시할 데이터 키 목록
+#     y_label - y축 레이블
+# ----------------------------------------------------------
+visualization:
+  layout: grid
+  plots:
+    - title: Lens Position
+      keys: [CurrLens]
+      y_label: DoF
+
+    - title: PD_AVG
+      keys: [pdResult, pdAvg]
+      y_label: DoF
+
+    - title: AI_AVG
+      keys: [aiResult, aiAvg]
+      y_label: DoF
