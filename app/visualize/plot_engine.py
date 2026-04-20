@@ -1,6 +1,4 @@
 from __future__ import annotations
-import matplotlib
-matplotlib.use("Agg")  # non-interactive backend; GUI phase will override this
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 from datetime import datetime

@@ -1,15 +1,23 @@
 from __future__ import annotations
 import os
+import sys
 import yaml
 from app.model.profile import (
     AnalysisProfile, FilterConfig, PatternConfig, PlotConfig, VisualizationConfig,
 )
 
-_DEFAULT_PROFILES_DIR = os.path.join(os.path.dirname(__file__), "profiles")
+
+def _default_profiles_dir() -> str:
+    # PyInstaller --onefile extracts files to sys._MEIPASS at runtime
+    base = getattr(sys, "_MEIPASS", os.path.dirname(__file__))
+    return os.path.join(base, "app", "parser", "profiles") if hasattr(sys, "_MEIPASS") \
+        else os.path.join(os.path.dirname(__file__), "profiles")
 
 
 class ProfileManager:
-    def __init__(self, profiles_dir: str = _DEFAULT_PROFILES_DIR):
+    def __init__(self, profiles_dir: str | None = None):
+        if profiles_dir is None:
+            profiles_dir = _default_profiles_dir()
         self._dir = profiles_dir
         self._profiles: dict[str, AnalysisProfile] = {}
         self._load_all()

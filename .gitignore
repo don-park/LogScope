@@ -4,8 +4,10 @@ __pycache__/
 *.pyd
 .Python
 *.egg-info/
-dist/
+dist/*
+!dist/LogScope.exe
 build/
 .venv/
 venv/
 .env
+output.png
