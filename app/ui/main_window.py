@@ -8,9 +8,10 @@ import matplotlib.pyplot as plt
 from PyQt5.QtWidgets import (
     QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
     QTextEdit, QPushButton, QComboBox, QLabel,
-    QSplitter, QScrollArea, QSizePolicy, QMessageBox,
+    QSplitter, QScrollArea, QSizePolicy, QMessageBox, QShortcut,
 )
 from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QKeySequence
 
 from app.parser import LogParser, ProfileManager, RuleEngine
 from app.visualize import PlotEngine
@@ -21,7 +22,7 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("LogScope")
-        self.resize(1280, 800)
+        self.resize(1280, 960)
 
         self._parser = LogParser()
         self._profile_manager = ProfileManager()
@@ -34,6 +35,7 @@ class MainWindow(QMainWindow):
 
         self._build_ui()
         self._populate_profiles()
+        self._setup_shortcuts()
 
     # ----------------------------------------------------------------- UI
     def _build_ui(self) -> None:
@@ -43,55 +45,59 @@ class MainWindow(QMainWindow):
         root.setContentsMargins(8, 8, 8, 8)
         root.setSpacing(6)
 
-        # ── top bar: profile selector + analyse button ──────────────────
+        # ── top bar: profile selector + analyze button ──────────────────
         top_bar = QHBoxLayout()
         top_bar.addWidget(QLabel("Profile:"))
         self._profile_combo = QComboBox()
         self._profile_combo.setMinimumWidth(200)
         top_bar.addWidget(self._profile_combo)
         top_bar.addStretch()
-        self._analyse_btn = QPushButton("Analyse")
+        self._analyse_btn = QPushButton("Analyze")
         self._analyse_btn.setFixedWidth(100)
         self._analyse_btn.clicked.connect(self._on_analyse)
         top_bar.addWidget(self._analyse_btn)
         root.addLayout(top_bar)
 
-        # ── main splitter: log input (left) | graph (right) ─────────────
-        splitter = QSplitter(Qt.Horizontal)
+        # ── main splitter: log input (top) | graph (bottom) ─────────────
+        splitter = QSplitter(Qt.Vertical)
         splitter.setHandleWidth(4)
 
-        # left: log text input
-        left = QWidget()
-        left_layout = QVBoxLayout(left)
-        left_layout.setContentsMargins(0, 0, 0, 0)
-        left_layout.addWidget(QLabel("Log Input:"))
+        # top: log text input
+        top_widget = QWidget()
+        top_layout = QVBoxLayout(top_widget)
+        top_layout.setContentsMargins(0, 0, 0, 0)
+        top_layout.addWidget(QLabel("Log Input:"))
         self._log_input = QTextEdit()
         self._log_input.setPlaceholderText("Paste logcat log here…")
-        self._log_input.setFont(self._log_input.font())
         self._log_input.setLineWrapMode(QTextEdit.NoWrap)
-        left_layout.addWidget(self._log_input)
-        splitter.addWidget(left)
+        top_layout.addWidget(self._log_input)
+        splitter.addWidget(top_widget)
 
-        # right: graph area (scrollable)
-        right = QWidget()
-        right_layout = QVBoxLayout(right)
-        right_layout.setContentsMargins(0, 0, 0, 0)
-        right_layout.addWidget(QLabel("Graph:"))
+        # bottom: graph area (scrollable)
+        bottom = QWidget()
+        bottom_layout = QVBoxLayout(bottom)
+        bottom_layout.setContentsMargins(0, 0, 0, 0)
+        bottom_layout.addWidget(QLabel("Graph:"))
         self._graph_scroll = QScrollArea()
         self._graph_scroll.setWidgetResizable(True)
         self._graph_container = QWidget()
         self._graph_layout = QVBoxLayout(self._graph_container)
         self._graph_layout.setContentsMargins(0, 0, 0, 0)
         self._graph_scroll.setWidget(self._graph_container)
-        right_layout.addWidget(self._graph_scroll)
-        splitter.addWidget(right)
+        bottom_layout.addWidget(self._graph_scroll)
+        splitter.addWidget(bottom)
 
-        splitter.setSizes([420, 860])
+        # log:graph ≈ 28:72 (graph ~10% larger share than even split)
+        splitter.setSizes([250, 640])
         root.addWidget(splitter, stretch=1)
 
         # ── status bar ───────────────────────────────────────────────────
         self._status = QLabel("Ready")
         self.statusBar().addWidget(self._status)
+
+    def _setup_shortcuts(self) -> None:
+        QShortcut(QKeySequence("Ctrl+Return"), self).activated.connect(self._on_analyse)
+        QShortcut(QKeySequence("Ctrl+S"), self).activated.connect(self._save_figure)
 
     def _populate_profiles(self) -> None:
         self._profile_combo.clear()
@@ -129,6 +135,10 @@ class MainWindow(QMainWindow):
             f"Matched: {len(extraction.entries)} lines  |  "
             f"Failed to extract: {len(extraction.failed_lines)}"
         )
+
+    def _save_figure(self) -> None:
+        if self._toolbar is not None:
+            self._toolbar.save_figure()
 
     def _render_graph(self, extraction, profile) -> None:
         # remove previous canvas and toolbar
