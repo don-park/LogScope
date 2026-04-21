@@ -22,7 +22,7 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("LogScope")
-        self.resize(1280, 960)
+        self.resize(1280, 1024)
 
         self._parser = LogParser()
         self._profile_manager = ProfileManager()
@@ -87,8 +87,8 @@ class MainWindow(QMainWindow):
         bottom_layout.addWidget(self._graph_scroll)
         splitter.addWidget(bottom)
 
-        # log:graph ≈ 28:72 (graph ~10% larger share than even split)
-        splitter.setSizes([250, 640])
+        # log:graph ≈ 15:85
+        splitter.setSizes([125, 765])
         root.addWidget(splitter, stretch=1)
 
         # ── status bar ───────────────────────────────────────────────────
