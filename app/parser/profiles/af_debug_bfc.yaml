@@ -42,9 +42,9 @@ patterns:
       separator: " "
       keys:
         - Dof
-        - FirstPos
         - step
         - point
+        - currDof
         - pdResult
         - aiResult
         - pdAvg
@@ -74,10 +74,10 @@ visualization:
       keys: [CurrLens_mm]
       y_label: mm
 
-    - title: PD Result
-      keys: [pdResult, pdAvg]
+    - title: PD-AIAF Result Compare
+      keys: [currDof, pdResult, pdAvg]
       y_label: DoF
 
-    - title: AI Result
-      keys: [aiResult, aiAvg]
+    - title: PD-AIAF Average Compare
+      keys: [currDof, aiResult, aiAvg]
       y_label: DoF

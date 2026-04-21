@@ -4,8 +4,8 @@ from app.model import ExtractionResult, ExtractedEntry
 
 # SampleLog의 AF_DEBUG BFC 라인 두 개 (음수 포함)
 SAMPLE_LINES = """\
-04-17 10:02:10.822  2107  4298  E  AF_DEBUG:    CheckDebugMode(4499) : [cam_id_0] BFC scaning 1 | Dof 64 | FirstPos 1726 | step 64 | point 10 | CurrLens 1726,  178 mm | pdResult   0.0938 | aiResult  -1.3683, 1 | pdAvg   0.0891 | aiAvg  -1.5747
-04-17 10:02:12.725  2107  4302  E  AF_DEBUG:    CheckDebugMode(4499) : [cam_id_0] BFC scaning 1 | Dof 64 | FirstPos 1726 | step 64 | point 10 | CurrLens 1086, 4930 mm | pdResult -10.0312 | aiResult -12.3674, 1 | pdAvg -10.0547 | aiAvg -12.3096
+04-17 10:02:10.822  2107  4298  E  AF_DEBUG:    CheckDebugMode(4499) : [cam_id_0] BFC scaning 1 | Dof 64 | step 64 | point 10 | CurrLens 1726,  178 mm | currDof  -0.0000 | pdResult   0.0938 | aiResult  -1.3683, 1 | pdAvg   0.0891 | aiAvg  -1.5747
+04-17 10:02:12.725  2107  4302  E  AF_DEBUG:    CheckDebugMode(4499) : [cam_id_0] BFC scaning 1 | Dof 64 | step 64 | point 10 | CurrLens 1086, 4930 mm | currDof -10.0000 | pdResult -10.0312 | aiResult -12.3674, 1 | pdAvg -10.0547 | aiAvg -12.3096
 """
 
 # 필터에 걸리지 않아야 할 라인들
@@ -62,7 +62,7 @@ class TestRuleEngine(unittest.TestCase):
 
     def test_segment_extracts_all_expected_keys(self):
         result = self._run(SAMPLE_LINES)
-        expected = {"Dof", "FirstPos", "step", "point", "pdResult", "aiResult", "pdAvg", "aiAvg"}
+        expected = {"Dof", "currDof", "step", "point", "pdResult", "aiResult", "pdAvg", "aiAvg"}
         self.assertTrue(expected.issubset(result.entries[0].values.keys()))
 
     # ------------------------------------------------- regex extraction
