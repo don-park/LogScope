@@ -75,9 +75,9 @@ visualization:
       y_label: mm
 
     - title: PD-AIAF Result Compare
-      keys: [currDof, pdResult, pdAvg]
+      keys: [currDof, pdResult, aiResult]
       y_label: DoF
 
     - title: PD-AIAF Average Compare
-      keys: [currDof, aiResult, aiAvg]
+      keys: [currDof, pdAvg, aiAvg]
       y_label: DoF
