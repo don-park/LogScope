@@ -101,6 +101,23 @@ class TestRuleEngine(unittest.TestCase):
         for v in result.entries[0].values.values():
             self.assertIsInstance(v, float)
 
+    # ------------------------------------------------- derived fields
+    def test_derived_dofDiff_computed(self):
+        result = self._run(SAMPLE_LINES)
+        entry = result.entries[0]
+        expected = entry.values["pdResult"] - entry.values["aiResult"]
+        self.assertAlmostEqual(entry.values["dofDiff"], expected, places=6)
+
+    def test_derived_dofDiff_is_float(self):
+        result = self._run(SAMPLE_LINES)
+        self.assertIsInstance(result.entries[0].values["dofDiff"], float)
+
+    def test_derived_dofDiff_negative_values(self):
+        result = self._run(SAMPLE_LINES)
+        entry = result.entries[1]
+        expected = entry.values["pdResult"] - entry.values["aiResult"]
+        self.assertAlmostEqual(entry.values["dofDiff"], expected, places=6)
+
     # ---------------------------------------------- full sample log
     def test_full_sample_log_extracts_22_entries(self):
         with open("Sample/SampleLog.txt", encoding="utf-8") as f:

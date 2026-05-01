@@ -4,6 +4,7 @@ import sys
 import yaml
 from app.model.profile import (
     AnalysisProfile, FilterConfig, PatternConfig, PlotConfig, VisualizationConfig,
+    DerivedConfig,
 )
 
 
@@ -65,11 +66,17 @@ class ProfileManager:
             plots=plots,
         )
 
+        derived = [
+            DerivedConfig(name=d["name"], expr=d["expr"])
+            for d in data.get("derived", [])
+        ]
+
         return AnalysisProfile(
             name=data["name"],
             filter=filter_cfg,
             patterns=patterns,
             visualization=vis,
+            derived=derived,
         )
 
     def list_profiles(self) -> list[str]:

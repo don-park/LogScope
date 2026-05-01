@@ -15,6 +15,12 @@ class PatternConfig:
 
 
 @dataclass
+class DerivedConfig:
+    name: str   # output key name (e.g. "dofDiff")
+    expr: str   # arithmetic expression using extracted keys (e.g. "pdResult - aiResult")
+
+
+@dataclass
 class PlotConfig:
     title: str
     keys: list[str]
@@ -33,3 +39,4 @@ class AnalysisProfile:
     filter: FilterConfig
     patterns: list[PatternConfig]
     visualization: VisualizationConfig
+    derived: list[DerivedConfig] = field(default_factory=list)

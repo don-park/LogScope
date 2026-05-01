@@ -2,7 +2,7 @@ from __future__ import annotations
 import re
 from app.model.log_entry import ParsedLine, ParseResult
 from app.model.parsed_data import ExtractedEntry, ExtractionResult
-from app.model.profile import AnalysisProfile, FilterConfig, PatternConfig
+from app.model.profile import AnalysisProfile, DerivedConfig, FilterConfig, PatternConfig
 
 
 class RuleEngine:
@@ -15,6 +15,8 @@ class RuleEngine:
             values = {}
             for pattern in profile.patterns:
                 values.update(self._apply_pattern(line.message, pattern))
+            if profile.derived:
+                self._apply_derived(values, profile.derived)
             if values:
                 result.entries.append(ExtractedEntry(
                     timestamp=line.timestamp,
@@ -25,6 +27,15 @@ class RuleEngine:
             else:
                 result.failed_lines.append(line.line_number)
         return result
+
+    # --------------------------------------------------------------- derived
+    def _apply_derived(self, values: dict, derived: list[DerivedConfig]) -> None:
+        for d in derived:
+            try:
+                val = eval(d.expr, {"__builtins__": {}}, values)  # noqa: S307
+                values[d.name] = float(val)
+            except Exception:
+                pass
 
     # ---------------------------------------------------------------- filter
     def _matches_filter(self, line: ParsedLine, f: FilterConfig) -> bool:
