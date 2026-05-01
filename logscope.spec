@@ -6,6 +6,7 @@ a = Analysis(
     binaries=[],
     datas=[
         ('app/parser/profiles/*.yaml', 'app/parser/profiles'),
+        ('logscope_icon.ico', '.'),
     ],
     hiddenimports=[
         'PyQt5.sip',
@@ -34,6 +35,7 @@ exe = EXE(
     upx=False,
     upx_exclude=[],
     runtime_tmpdir=None,
+    icon='logscope_icon.ico',
     console=False,   # no console window (GUI app)
     disable_windowed_traceback=False,
     target_arch=None,

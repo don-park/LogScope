@@ -1,4 +1,6 @@
 from __future__ import annotations
+import os
+import sys
 import matplotlib
 matplotlib.use("Qt5Agg")
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
@@ -11,10 +13,17 @@ from PyQt5.QtWidgets import (
     QSplitter, QScrollArea, QSizePolicy, QMessageBox, QShortcut,
 )
 from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QKeySequence
+from PyQt5.QtGui import QKeySequence, QIcon
 
 from app.parser import LogParser, ProfileManager, RuleEngine
 from app.visualize import PlotEngine
+
+
+def _resource_path(filename: str) -> str:
+    if hasattr(sys, '_MEIPASS'):
+        return os.path.join(sys._MEIPASS, filename)
+    root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    return os.path.join(root, filename)
 
 
 class MainWindow(QMainWindow):
@@ -22,6 +31,7 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("LogScope")
+        self.setWindowIcon(QIcon(_resource_path("logscope_icon.ico")))
         self.resize(1280, 1024)
 
         self._parser = LogParser()
