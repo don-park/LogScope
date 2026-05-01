@@ -90,7 +90,9 @@ visualization:
     - title: PD-AIAF Result Compare
       keys: [currDof, pdResult, aiResult, dofDiff]
       y_label: DoF
+      center_zero: true
 
     - title: PD-AIAF Average Compare
       keys: [currDof, pdAvg, aiAvg, dofAvgDiff]
       y_label: DoF
+      center_zero: true

@@ -60,6 +60,7 @@ class ProfileManager:
                 y_label=pl.get("y_label"),
                 y2_keys=pl.get("y2_keys", []),
                 y2_label=pl.get("y2_label"),
+                center_zero=pl.get("center_zero", False),
             )
             for pl in vdata.get("plots", [])
         ]

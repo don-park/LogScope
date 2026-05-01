@@ -63,6 +63,12 @@ class PlotEngine:
         ax.xaxis.get_major_locator().set_params(integer=True)
         plt.setp(ax.xaxis.get_majorticklabels(), fontsize=7)
 
+        if cfg.center_zero and ax.lines:
+            ymin, ymax = ax.get_ylim()
+            limit = max(abs(ymin), abs(ymax))
+            if limit > 0:
+                ax.set_ylim(-limit, limit)
+
         all_handles, all_labels = ax.get_legend_handles_labels()
 
         if cfg.y2_keys:

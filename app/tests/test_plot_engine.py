@@ -35,6 +35,20 @@ class TestPlotEngine(unittest.TestCase):
     def tearDown(self):
         plt.close("all")
 
+    # --------------------------------------------------------- center zero
+    def test_center_zero_makes_ylim_symmetric(self):
+        vis = VisualizationConfig(plots=[PlotConfig(title="T", keys=["x"], center_zero=True)])
+        fig = self.engine.render(self.result, vis)
+        ymin, ymax = fig.axes[0].get_ylim()
+        self.assertAlmostEqual(ymin, -ymax, places=6)
+
+    def test_center_zero_false_does_not_force_symmetric(self):
+        # all-positive data: auto-scaled limits should not be symmetric
+        vis = VisualizationConfig(plots=[PlotConfig(title="T", keys=["x"], center_zero=False)])
+        fig = self.engine.render(self.result, vis)
+        ymin, ymax = fig.axes[0].get_ylim()
+        self.assertNotAlmostEqual(abs(ymin), ymax, places=1)
+
     # ------------------------------------------------------ secondary y-axis
     def test_y2_keys_creates_twin_axis(self):
         vis = VisualizationConfig(plots=[PlotConfig(title="T", keys=["x"], y2_keys=["y"])])

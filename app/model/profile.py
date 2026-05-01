@@ -27,6 +27,7 @@ class PlotConfig:
     y_label: str | None = None
     y2_keys: list[str] = field(default_factory=list)
     y2_label: str | None = None
+    center_zero: bool = False
 
 
 @dataclass
