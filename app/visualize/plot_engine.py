@@ -50,6 +50,7 @@ class PlotEngine:
         if cfg.y_label:
             ax.set_ylabel(cfg.y_label, fontsize=8)
         ax.tick_params(axis="both", labelsize=7)
+        ax.grid(True, linestyle="--", alpha=0.5)
 
         for key in cfg.keys:
             y_values = [e.values.get(key) for e in result.entries]
@@ -62,7 +63,23 @@ class PlotEngine:
         ax.xaxis.get_major_locator().set_params(integer=True)
         plt.setp(ax.xaxis.get_majorticklabels(), fontsize=7)
 
-        if len(cfg.keys) > 1:
-            ax.legend(fontsize=7, loc="best")
+        all_handles, all_labels = ax.get_legend_handles_labels()
 
-        ax.grid(True, linestyle="--", alpha=0.5)
+        if cfg.y2_keys:
+            ax2 = ax.twinx()
+            if cfg.y2_label:
+                ax2.set_ylabel(cfg.y2_label, fontsize=8)
+            ax2.tick_params(axis="y", labelsize=7)
+            for key in cfg.y2_keys:
+                y_values = [e.values.get(key) for e in result.entries]
+                pairs = [(f, v) for f, v in zip(frames, y_values) if v is not None]
+                if not pairs:
+                    continue
+                fs, ys = zip(*pairs)
+                ax2.plot(fs, ys, marker="s", markersize=3, linewidth=1.2, linestyle="--", label=key)
+            h2, l2 = ax2.get_legend_handles_labels()
+            all_handles += h2
+            all_labels += l2
+
+        if len(all_handles) > 1:
+            ax.legend(all_handles, all_labels, fontsize=7, loc="best")

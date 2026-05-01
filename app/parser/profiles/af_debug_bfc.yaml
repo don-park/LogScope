@@ -63,6 +63,8 @@ patterns:
 derived:
   - name: dofDiff
     expr: "pdResult - aiResult"
+  - name: dofAvgDiff
+    expr: "pdAvg - aiAvg"
 
 # ----------------------------------------------------------
 # visualization: 그래프 레이아웃 및 플롯 정의
@@ -75,9 +77,11 @@ derived:
 visualization:
   layout: grid
   plots:
-    - title: Lens Position (code)
+    - title: Lens Position
       keys: [CurrLens_code]
       y_label: code
+      y2_keys: [CurrLens_mm]
+      y2_label: mm
 
     - title: Lens Position (mm)
       keys: [CurrLens_mm]
@@ -88,5 +92,5 @@ visualization:
       y_label: DoF
 
     - title: PD-AIAF Average Compare
-      keys: [currDof, pdAvg, aiAvg]
+      keys: [currDof, pdAvg, aiAvg, dofAvgDiff]
       y_label: DoF

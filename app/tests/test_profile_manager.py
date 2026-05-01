@@ -68,7 +68,7 @@ class TestProfileManager(unittest.TestCase):
         p = pm.get("AF BFC Scan")
         self.assertEqual(len(p.visualization.plots), 4)
         titles = [pl.title for pl in p.visualization.plots]
-        self.assertIn("Lens Position (code)", titles)
+        self.assertIn("Lens Position", titles)
         self.assertIn("Lens Position (mm)", titles)
 
     # -------------------------------------------- custom dir / load_file

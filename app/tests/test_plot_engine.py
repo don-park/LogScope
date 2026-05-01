@@ -35,6 +35,30 @@ class TestPlotEngine(unittest.TestCase):
     def tearDown(self):
         plt.close("all")
 
+    # ------------------------------------------------------ secondary y-axis
+    def test_y2_keys_creates_twin_axis(self):
+        vis = VisualizationConfig(plots=[PlotConfig(title="T", keys=["x"], y2_keys=["y"])])
+        fig = self.engine.render(self.result, vis)
+        # twinx adds a second Axes sharing the same x-axis
+        self.assertEqual(len(fig.axes), 2)
+
+    def test_y2_axis_draws_secondary_line(self):
+        vis = VisualizationConfig(plots=[PlotConfig(title="T", keys=["x"], y2_keys=["y"])])
+        fig = self.engine.render(self.result, vis)
+        ax2 = fig.axes[1]
+        self.assertEqual(len(ax2.lines), 1)
+
+    def test_y2_label_applied(self):
+        vis = VisualizationConfig(plots=[PlotConfig(title="T", keys=["x"], y2_keys=["y"], y2_label="Right")])
+        fig = self.engine.render(self.result, vis)
+        ax2 = fig.axes[1]
+        self.assertEqual(ax2.get_ylabel(), "Right")
+
+    def test_no_y2_keys_single_axes(self):
+        vis = VisualizationConfig(plots=[PlotConfig(title="T", keys=["x"])])
+        fig = self.engine.render(self.result, vis)
+        self.assertEqual(len(fig.axes), 1)
+
     # --------------------------------------------------------- basic render
     def test_render_returns_figure(self):
         vis = VisualizationConfig(plots=[PlotConfig(title="X", keys=["x"])])
@@ -100,7 +124,8 @@ class TestPlotEngine(unittest.TestCase):
 
         fig = self.engine.render(extraction, profile.visualization)
         self.assertIsInstance(fig, plt.Figure)
-        visible_axes = [ax for ax in fig.axes if ax.get_visible()]
+        # twinx axes share the x-axis and have no title — exclude them
+        visible_axes = [ax for ax in fig.axes if ax.get_visible() and ax.get_title()]
         self.assertEqual(len(visible_axes), len(profile.visualization.plots))
 
     def test_sample_log_plot_titles_match_profile(self):
@@ -111,7 +136,7 @@ class TestPlotEngine(unittest.TestCase):
         fig = self.engine.render(extraction, profile.visualization)
 
         expected_titles = {pl.title for pl in profile.visualization.plots}
-        actual_titles = {ax.get_title() for ax in fig.axes if ax.get_visible()}
+        actual_titles = {ax.get_title() for ax in fig.axes if ax.get_visible() and ax.get_title()}
         self.assertEqual(expected_titles, actual_titles)
 
     def test_sample_log_lines_have_data_points(self):
