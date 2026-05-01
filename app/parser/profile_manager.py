@@ -9,10 +9,11 @@ from app.model.profile import (
 
 
 def _default_profiles_dir() -> str:
-    # PyInstaller --onefile extracts files to sys._MEIPASS at runtime
-    base = getattr(sys, "_MEIPASS", os.path.dirname(__file__))
-    return os.path.join(base, "app", "parser", "profiles") if hasattr(sys, "_MEIPASS") \
-        else os.path.join(os.path.dirname(__file__), "profiles")
+    if hasattr(sys, "_MEIPASS"):
+        # packaged exe: load profiles from a folder next to the exe
+        return os.path.join(os.path.dirname(sys.executable), "profiles")
+    # dev: use source profiles directory
+    return os.path.join(os.path.dirname(__file__), "profiles")
 
 
 class ProfileManager:

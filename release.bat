@@ -32,8 +32,21 @@ if %ERRORLEVEL% neq 0 (
 )
 echo.
 
-echo [3/3] Build complete.
+echo [3/4] Copying profiles to dist\profiles\...
+if exist dist\profiles rmdir /s /q dist\profiles
+xcopy /E /I /Q app\parser\profiles dist\profiles
+if %ERRORLEVEL% neq 0 (
+    echo.
+    echo [FAILED] Profile copy failed.
+    pause
+    exit /b 1
+)
+echo        Profiles copied.
+echo.
+
+echo [4/4] Build complete.
 echo        Output: dist\LogScope.exe
+echo                dist\profiles\
 for %%A in (dist\LogScope.exe) do echo        Size:   %%~zA bytes
 echo.
 echo =============================================

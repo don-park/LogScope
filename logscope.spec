@@ -5,7 +5,6 @@ a = Analysis(
     pathex=['.'],
     binaries=[],
     datas=[
-        ('app/parser/profiles/*.yaml', 'app/parser/profiles'),
         ('logscope_icon.ico', '.'),
     ],
     hiddenimports=[
